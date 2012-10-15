@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -14,8 +15,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.findwise.hydra.Stage;
 import com.findwise.hydra.admin.ConfigurationService;
 import com.findwise.hydra.admin.documents.DocumentsService;
+import com.findwise.hydra.admin.stages.StagesService;
+import com.findwise.hydra.common.JsonException;
 
 @Controller("/rest")
 public class ConfigurationController {
@@ -25,6 +29,9 @@ public class ConfigurationController {
 	@Autowired
 	private DocumentsService<?> documentService;
 
+	@Autowired
+	private StagesService<?> stagesService;
+	
 	public DocumentsService<?> getDocumentService() {
 		return documentService;
 	}
@@ -40,6 +47,13 @@ public class ConfigurationController {
 		this.service = service;
 	}
 
+	
+	@ResponseBody
+	@RequestMapping(method=RequestMethod.GET, value="") 
+	public Map<String, Object> getStats() {
+		return service.getStats();
+	}
+	
 	@ResponseBody
 	@RequestMapping(method=RequestMethod.GET, value="/library")
 	public Map<String, Object> getLibraries() {
@@ -61,11 +75,22 @@ public class ConfigurationController {
 	}
 
 	@ResponseBody
-	@RequestMapping(method=RequestMethod.GET, value="") 
-	public Map<String, Object> getStats() {
-		return service.getStats();
+	@RequestMapping(method = RequestMethod.GET, value = "library/{id}/stage/{stageName}")
+	public Stage getStageInfo(
+			@PathVariable(value = "id") String libraryId,
+			@PathVariable(value = "stageName") String stageName) {
+		return stagesService.getStageInfo(libraryId, stageName);
 	}
 	
+	@ResponseStatus(HttpStatus.ACCEPTED)
+	@RequestMapping(method = RequestMethod.POST, value = "library/{id}/stage/{stageName}")
+	@ResponseBody
+	public Map<String, Object> addStage(
+			@PathVariable(value = "id") String libraryId,
+			@PathVariable(value = "stageName") String stageName,
+			@RequestBody String jsonConfig) throws JsonException, IOException {
+		return stagesService.addStage(libraryId, stageName, jsonConfig);
+	}
 
 	@ResponseBody
 	@RequestMapping(method = RequestMethod.GET, value = "/documents/count")
@@ -82,4 +107,5 @@ public class ConfigurationController {
 			@RequestParam(required = false, defaultValue = "0", value = "skip") int skip) {
 		return documentService.getDocuments(jsonQuery, limit, skip);
 	}
+	
 }
