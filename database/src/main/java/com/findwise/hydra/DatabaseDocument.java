@@ -6,6 +6,8 @@ public interface DatabaseDocument<T extends DatabaseType> extends Document {
 
 	Object putMetadataField(String key, Object value);
 	
+	boolean removeMetadataField(String key);
+	
 	boolean touchedBy(String stage);
 	
 	boolean fetchedBy(String stage);

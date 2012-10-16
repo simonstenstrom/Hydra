@@ -108,4 +108,14 @@ public class ConfigurationController {
 		return documentService.getDocuments(jsonQuery, limit, skip);
 	}
 	
+
+	@ResponseBody
+	@RequestMapping(method = RequestMethod.POST, value = "/documents/edit")
+	public Map<String, Object> editDocuments(
+			@RequestParam(required = false, defaultValue = "{}", value = "q") String jsonQuery,
+			@RequestParam(required = false, defaultValue = "1", value = "limit") int limit,
+			@RequestBody String changes) {
+		return documentService.updateDocuments(jsonQuery, limit, changes);
+	}
+	
 }

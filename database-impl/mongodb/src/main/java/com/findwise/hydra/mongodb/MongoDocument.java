@@ -402,4 +402,10 @@ public class MongoDocument implements DBObject, DatabaseDocument<MongoType> {
 	public boolean fetchedBy(String stage) {
 		return getMetadataSubMap(FETCHED_METADATA_TAG).containsKey(stage);
 	}
+
+	@Override
+	public boolean removeMetadataField(String key) {
+		touchedMetadata.add(key);
+		return getMetadata().removeField(key) != null;
+	}
 }
