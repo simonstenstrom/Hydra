@@ -73,14 +73,6 @@ public class ConfigurationController {
 		service.addLibrary(id, file.getOriginalFilename(), file.getInputStream());
 		return getLibrary(id);
 	}
-
-	@ResponseBody
-	@RequestMapping(method = RequestMethod.GET, value = "library/{id}/stage/{stageName}")
-	public Stage getStageInfo(
-			@PathVariable(value = "id") String libraryId,
-			@PathVariable(value = "stageName") String stageName) {
-		return stagesService.getStageInfo(libraryId, stageName);
-	}
 	
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	@RequestMapping(method = RequestMethod.POST, value = "library/{id}/stage/{stageName}")
@@ -92,6 +84,13 @@ public class ConfigurationController {
 		return stagesService.addStage(libraryId, stageName, jsonConfig);
 	}
 
+
+	@ResponseBody
+	@RequestMapping(method = RequestMethod.GET, value = "stage/{stageName}")
+	public Stage getStageInfo(@PathVariable(value = "stageName") String stageName) {
+		return stagesService.getStageInfo(stageName);
+	}
+	
 	@ResponseBody
 	@RequestMapping(method = RequestMethod.GET, value = "/documents/count")
 	public Map<String, Object> getDocumentCount(

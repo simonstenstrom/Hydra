@@ -56,7 +56,7 @@ public class StagesService<T extends DatabaseType> {
 
 	}
 
-	public Stage getStageInfo(String libraryId, String stageName) {
+	public Stage getStageInfo(String stageName) {
 		return connector.getPipelineReader().getPipeline().getStage(stageName);
 	}
 
