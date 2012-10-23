@@ -122,8 +122,13 @@ public class MemoryDocument extends LocalDocument implements DatabaseDocument<Me
 	}
 
 	@Override
-	public boolean removeMetadataField(String key) {
-		return getMetadataMap().remove(key) != null;
-		
+	public boolean removeFetchedBy(String stage) {
+		return getMetadataSubMap(FETCHED_METADATA_TAG).remove(stage) != null;
 	}
+	
+	@Override
+	public boolean removeTouchedBy(String stage) {
+		return getMetadataSubMap(TOUCHED_METADATA_TAG).remove(stage) != null;
+	}
+	
 }

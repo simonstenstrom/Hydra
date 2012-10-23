@@ -403,9 +403,17 @@ public class MongoDocument implements DBObject, DatabaseDocument<MongoType> {
 		return getMetadataSubMap(FETCHED_METADATA_TAG).containsKey(stage);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public boolean removeMetadataField(String key) {
-		touchedMetadata.add(key);
-		return getMetadata().removeField(key) != null;
+	public boolean removeFetchedBy(String stage) {
+		touchedMetadata.add(FETCHED_METADATA_TAG);
+		return ((Map<String,Object>)getMetadataMap().get(FETCHED_METADATA_TAG)).remove(stage)!=null;
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public boolean removeTouchedBy(String stage) {
+		touchedMetadata.add(TOUCHED_METADATA_TAG);
+		return ((Map<String,Object>)getMetadataMap().get(TOUCHED_METADATA_TAG)).remove(stage)!=null;
 	}
 }

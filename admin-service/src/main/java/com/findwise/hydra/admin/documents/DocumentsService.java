@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import com.findwise.hydra.DatabaseConnector;
@@ -15,8 +14,7 @@ import com.findwise.hydra.DatabaseType;
 import com.findwise.hydra.admin.database.AdminServiceQuery;
 import com.findwise.hydra.admin.database.AdminServiceType;
 import com.findwise.hydra.common.JsonException;
-import com.google.gson.Gson;
-import com.google.gson.JsonParseException;
+import com.findwise.hydra.common.SerializationUtils;
 
 public class DocumentsService<T extends DatabaseType> {
 
@@ -89,31 +87,41 @@ public class DocumentsService<T extends DatabaseType> {
 					connector.convert(query), limit, 0);
 
 			if (!documents.isEmpty()) {
-				
+
 				try {
-					Gson gson = new Gson();
-					Map<?,?> changesMap = gson.fromJson(changes, Map.class);
+					Map<String, Object> changesMap = SerializationUtils
+							.fromJson(changes);
 					Set<DatabaseDocument<T>> changedDocuments = new HashSet<DatabaseDocument<T>>();
-					
-					Object deleteObject = changesMap.get("deletes");
-					List<?> deletes = (List<?>) deleteObject;
-					for (DatabaseDocument<T> document : documents) {
-						for (Object field : deletes) {
-							boolean change = document.removeMetadataField((String) field);
-							if (change) {
-								changedDocuments.add(document);
+
+					@SuppressWarnings("unchecked")
+					Map<String, List<String>> deleteObject = (Map<String, List<String>>) changesMap
+							.get("delete");
+
+					if (deleteObject != null) {
+						for (DatabaseDocument<T> document : documents) {
+							List<String> fetched = deleteObject.get("fetched");
+							if (fetched != null) {
+								for (String field : fetched) {
+									boolean change = document
+											.removeFetchedBy(field);
+									if (change) {
+										connector.getDocumentWriter().update(
+												document);
+										changedDocuments.add(document);
+									}
+								}
 							}
-						}
-					}
-
-					Object addObject = changesMap.get("adds");
-					Map<?, ?> adds = (Map<?, ?>) addObject;
-					for (DatabaseDocument<T> document : documents) {
-						for (Entry<?, ?> field : adds.entrySet()) {
-							Object change = document.putMetadataField((String) field.getKey(), field.getValue());
-
-							if (change != null) {
-								changedDocuments.add(document);
+							List<String> touched = deleteObject.get("touched");
+							if (touched != null) {
+								for (String field : touched) {
+									boolean change = document
+											.removeTouchedBy(field);
+									if (change) {
+										connector.getDocumentWriter().update(
+												document);
+										changedDocuments.add(document);
+									}
+								}
 							}
 						}
 					}
@@ -123,14 +131,16 @@ public class DocumentsService<T extends DatabaseType> {
 				} catch (ClassCastException e) {
 					Map<String, String> error = new HashMap<String, String>();
 					error.put("Invalid change map", changes);
-					error.put("Expected format:",
-							"{deletes:[fetched.staticFieldStage,touched.staticFieldStage],adds:{newmetadatakey:newmetadatavalue}}");
+					error.put(
+							"Expected format:",
+							"{\"adds\":{\"metadata.fetched.staticField\":\"1234\"},\"deletes\":{fetched:[\"staticField\"]},touched:[\"staticField\"]}");
 					ret.put("error", error);
 					ret.put("numberOfChangedDocuments", 0);
-				} catch (JsonParseException e) {
+				} catch (JsonException e) {
 					Map<String, String> error = new HashMap<String, String>();
 					error.put("Invalid change map", changes);
-					error.put("Expected format:",
+					error.put(
+							"Expected format:",
 							"{deletes:[fetched.staticFieldStage,touched.staticFieldStage],adds:{newmetadatakey:newmetadatavalue}}");
 					ret.put("error", error);
 					ret.put("numberOfChangedDocuments", 0);
