@@ -1,6 +1,7 @@
 package com.findwise.hydra.admin.rest;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,19 +56,19 @@ public class ConfigurationController {
 	}
 	
 	@ResponseBody
-	@RequestMapping(method=RequestMethod.GET, value="/library")
+	@RequestMapping(method=RequestMethod.GET, value="/libraries")
 	public Map<String, Object> getLibraries() {
 		return service.getLibraries();
 	}
 	
 	@ResponseBody
-	@RequestMapping(method=RequestMethod.GET, value="/library/{id}")
+	@RequestMapping(method=RequestMethod.GET, value="/libraries/{id}")
 	public Map<String, Object> getLibrary(@PathVariable String id) {
 		return service.getLibrary(id);
 	}
 	
 	@ResponseStatus(HttpStatus.ACCEPTED)
-	@RequestMapping(method=RequestMethod.POST, value="/library/{id}")
+	@RequestMapping(method=RequestMethod.POST, value="/libraries/{id}")
 	@ResponseBody
 	public Map<String, Object> addLibrary(@PathVariable String id, @RequestParam MultipartFile file) throws IOException {
 		service.addLibrary(id, file.getOriginalFilename(), file.getInputStream());
@@ -75,7 +76,7 @@ public class ConfigurationController {
 	}
 	
 	@ResponseStatus(HttpStatus.ACCEPTED)
-	@RequestMapping(method = RequestMethod.POST, value = "library/{id}/stage/{stageName}")
+	@RequestMapping(method = RequestMethod.POST, value = "/libraries/{id}/stages/{stageName}")
 	@ResponseBody
 	public Map<String, Object> addStage(
 			@PathVariable(value = "id") String libraryId,
@@ -86,7 +87,13 @@ public class ConfigurationController {
 
 
 	@ResponseBody
-	@RequestMapping(method = RequestMethod.GET, value = "stage/{stageName}")
+	@RequestMapping(method = RequestMethod.GET, value = "/stages")
+	public Map<String,List<Stage>> getStages() {
+		return stagesService.getStages();
+	}
+	
+	@ResponseBody
+	@RequestMapping(method = RequestMethod.GET, value = "/stages/{stageName}")
 	public Stage getStageInfo(@PathVariable(value = "stageName") String stageName) {
 		return stagesService.getStageInfo(stageName);
 	}
@@ -99,7 +106,7 @@ public class ConfigurationController {
 	}
 
 	@ResponseBody
-	@RequestMapping(method = RequestMethod.GET, value = "/documents/list")
+	@RequestMapping(method = RequestMethod.GET, value = "/documents")
 	public Map<String, Object> getDocuments(
 			@RequestParam(required = false, defaultValue = "{}", value = "q") String jsonQuery,
 			@RequestParam(required = false, defaultValue = "10", value = "limit") int limit,

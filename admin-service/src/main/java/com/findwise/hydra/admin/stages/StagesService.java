@@ -2,6 +2,7 @@ package com.findwise.hydra.admin.stages;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.bson.types.ObjectId;
@@ -24,6 +25,12 @@ public class StagesService<T extends DatabaseType> {
 
 	public DatabaseConnector<T> getConnector() {
 		return connector;
+	}
+	
+	public Map<String, List<Stage>> getStages() {
+		Map<String, List<Stage>> ret = new HashMap<String, List<Stage>>();
+		ret.put("stages", connector.getPipelineReader().getPipeline().getStages());
+		return ret;
 	}
 
 	public Map<String, Object> addStage(String libraryId, String name,
