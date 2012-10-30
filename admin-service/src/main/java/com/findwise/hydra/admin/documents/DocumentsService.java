@@ -95,7 +95,7 @@ public class DocumentsService<T extends DatabaseType> {
 
 					@SuppressWarnings("unchecked")
 					Map<String, List<String>> deleteObject = (Map<String, List<String>>) changesMap
-							.get("delete");
+							.get("deletes");
 
 					if (deleteObject != null) {
 						for (DatabaseDocument<T> document : documents) {
@@ -131,17 +131,15 @@ public class DocumentsService<T extends DatabaseType> {
 				} catch (ClassCastException e) {
 					Map<String, String> error = new HashMap<String, String>();
 					error.put("Invalid change map", changes);
-					error.put(
-							"Expected format:",
-							"{\"adds\":{\"metadata.fetched.staticField\":\"1234\"},\"deletes\":{fetched:[\"staticField\"]},touched:[\"staticField\"]}");
+					error.put("Expected format:",
+							"{\"deletes\":{fetched:[\"staticField\"]},touched:[\"staticField\"]}");
 					ret.put("error", error);
 					ret.put("numberOfChangedDocuments", 0);
 				} catch (JsonException e) {
 					Map<String, String> error = new HashMap<String, String>();
 					error.put("Invalid change map", changes);
-					error.put(
-							"Expected format:",
-							"{deletes:[fetched.staticFieldStage,touched.staticFieldStage],adds:{newmetadatakey:newmetadatavalue}}");
+					error.put("Expected format:",
+							"{\"deletes\":{fetched:[\"staticField\"]},touched:[\"staticField\"]}");
 					ret.put("error", error);
 					ret.put("numberOfChangedDocuments", 0);
 				}
