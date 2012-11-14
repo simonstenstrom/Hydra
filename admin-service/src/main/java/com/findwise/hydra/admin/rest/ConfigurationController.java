@@ -24,15 +24,16 @@ import com.findwise.hydra.admin.stages.StagesService;
 import com.findwise.hydra.common.JsonException;
 
 
-@Controller("/rest")
+@Controller("/rest/single")
 public class ConfigurationController {
-	@Autowired
+	
+	//@Autowired
 	private ConfigurationService<?> service;
 	
-	@Autowired
+	//@Autowired
 	private DocumentsService<?> documentService;
 
-	@Autowired
+	//@Autowired
 	private StagesService<?> stagesService;
 	
 	public DocumentsService<?> getDocumentService() {
