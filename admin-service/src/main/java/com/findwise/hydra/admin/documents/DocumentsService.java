@@ -13,8 +13,8 @@ import com.findwise.hydra.DatabaseQuery;
 import com.findwise.hydra.DatabaseType;
 import com.findwise.hydra.admin.database.AdminServiceQuery;
 import com.findwise.hydra.admin.database.AdminServiceType;
-import com.findwise.hydra.common.JsonException;
-import com.findwise.hydra.common.SerializationUtils;
+import com.findwise.hydra.JsonException;
+import com.findwise.hydra.SerializationUtils;
 
 public class DocumentsService<T extends DatabaseType> {
 

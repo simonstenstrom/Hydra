@@ -113,7 +113,7 @@ public class ConfigurationServiceMultiple<T extends DatabaseType> {
 		return map;
 	}
 
-	private Map<String, Object> getStageConfigMap(Pipeline<Stage> pipeline) {
+	private Map<String, Object> getStageConfigMap(Pipeline pipeline) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		for (Stage s : pipeline.getStages()) {
 			HashMap<String, Object> stage = new HashMap<String, Object>();

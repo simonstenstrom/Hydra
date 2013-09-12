@@ -2,8 +2,8 @@ package com.findwise.hydra.admin.multiple;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
@@ -12,10 +12,11 @@ import org.slf4j.LoggerFactory;
 import com.findwise.hydra.DatabaseConnector;
 import com.findwise.hydra.DatabaseFile;
 import com.findwise.hydra.DatabaseType;
+import com.findwise.hydra.JsonException;
 import com.findwise.hydra.Pipeline;
+import com.findwise.hydra.SerializationUtils;
 import com.findwise.hydra.Stage;
-import com.findwise.hydra.common.JsonException;
-import com.findwise.hydra.common.SerializationUtils;
+import com.findwise.hydra.StageGroup;
 
 public class StagesServiceMultiple<T extends DatabaseType> {
 
@@ -34,10 +35,10 @@ public class StagesServiceMultiple<T extends DatabaseType> {
 		}
 	}
 
-	public Map<String, List<Stage>> getStages(String pipelineName) {
-		Map<String, List<Stage>> ret = new HashMap<String, List<Stage>>();
+	public Map<String, Set<Stage>> getStages(String pipelineName) {
+		Map<String, Set<Stage>> ret = new HashMap<String, Set<Stage>>();
 		DatabaseConnector<T> connector = connectors.get(pipelineName);
-		List<Stage> stages = connector.getPipelineReader().getPipeline().getStages();
+		Set<Stage> stages = connector.getPipelineReader().getPipeline().getStages();
 		ret.put("stages", stages);
 
 		return ret;
@@ -69,8 +70,10 @@ public class StagesServiceMultiple<T extends DatabaseType> {
 			s.setMode(Stage.Mode.ACTIVE);
 		}
 
-		Pipeline<Stage> pipeline = connector.getPipelineReader().getPipeline();
-		pipeline.addStage(s);
+		Pipeline pipeline = connector.getPipelineReader().getPipeline();
+		StageGroup sg = new StageGroup(s.getName());
+		sg.addStage(s); //TODO: verify
+		pipeline.addGroup(sg);
 		connector.getPipelineWriter().write(pipeline);
 
 	}
